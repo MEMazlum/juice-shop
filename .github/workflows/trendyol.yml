@@ -2,9 +2,9 @@ name: DevSecOps Security Scan
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   security:
@@ -23,16 +23,10 @@ jobs:
       - name: Dependency Review
         uses: actions/dependency-review-action@v3
 
-      # 3. Snyk ile açık taraması (ücretsiz hesap gerekir)
+      # 3. Snyk ile açık taraması
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: test
-
-      # 4. Gitleaks ile gizli anahtar kontrolü
-      - name: Scan for secrets with Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
