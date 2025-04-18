@@ -15,15 +15,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 1. NPM güvenlik taraması
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Audit NPM packages
         run: npm audit --production
 
-      # 2. Dependency Review (GitHub built-in)
       - name: Dependency Review
         uses: actions/dependency-review-action@v3
 
-      # 3. Snyk ile açık taraması
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
