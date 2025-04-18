@@ -1,0 +1,38 @@
+name: DevSecOps Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security:
+    name: Security Scans
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 1. NPM güvenlik taraması
+      - name: Audit NPM packages
+        run: npm audit --production
+
+      # 2. Dependency Review (GitHub built-in)
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+
+      # 3. Snyk ile açık taraması (ücretsiz hesap gerekir)
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: test
+
+      # 4. Gitleaks ile gizli anahtar kontrolü
+      - name: Scan for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
